@@ -1,0 +1,819 @@
+/* ===================================================================
+   TAPPY STRIKER: ANTEK ASING BUSTER
+   Typography Constraint: MAX 2 FONTS
+   1. 'Chakra Petch' (Display, Headers, Arcade Labels)
+   2. 'Plus Jakarta Sans' (Body, UI, Stats, Descriptions)
+   Color Constraint: BRIGHT YELLOW ACCENT (#FFE81F / #FFEA00)
+=================================================================== */
+
+:root {
+  /* Bright Yellow Accent Palette */
+  --accent-yellow: #FFE81F;
+  --accent-yellow-bright: #FFF24D;
+  --accent-yellow-dark: #CCA800;
+  --accent-yellow-glow: rgba(255, 232, 31, 0.45);
+  --accent-yellow-subtle: rgba(255, 232, 31, 0.12);
+
+  /* Tactical Dark Foundation */
+  --bg-dark-base: #080A0F;
+  --bg-surface: #0F141F;
+  --bg-surface-elevated: #171E2E;
+  --bg-surface-glass: rgba(15, 20, 31, 0.82);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-yellow: rgba(255, 232, 31, 0.35);
+
+  /* Combat Status Colors */
+  --color-danger: #FF334B;
+  --color-danger-glow: rgba(255, 51, 75, 0.4);
+  --color-success: #00E676;
+  --color-cyan: #00E5FF;
+  --text-primary: #F0F4FC;
+  --text-muted: #8E9BAE;
+
+  /* Strict Font Families */
+  --font-display: 'Chakra Petch', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+
+  --shadow-hud: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --glow-yellow: 0 0 20px var(--accent-yellow-glow);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body {
+  background-color: var(--bg-dark-base);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(255, 232, 31, 0.08) 0%, transparent 60%),
+    linear-gradient(180deg, #07090E 0%, #0C1018 100%);
+}
+
+#game-app {
+  width: 100%;
+  max-width: 1040px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ===================================================================
+   1. Header Section
+=================================================================== */
+.game-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-surface-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-yellow);
+  border-radius: 12px;
+  padding: 10px 18px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.brand-badge {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: var(--accent-yellow);
+  text-shadow: 0 0 8px var(--accent-yellow-glow);
+}
+
+.brand-title {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #FFFFFF;
+  line-height: 1.1;
+}
+
+.brand-title span {
+  color: var(--accent-yellow);
+  text-shadow: 0 0 12px var(--accent-yellow-glow);
+}
+
+.hud-stats {
+  display: flex;
+  gap: 16px;
+}
+
+.stat-box {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 6px 14px;
+  min-width: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-box::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent-yellow);
+}
+
+.stat-label {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+}
+
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--accent-yellow);
+  text-shadow: 0 0 10px var(--accent-yellow-glow);
+}
+
+#kills-box .stat-value {
+  color: #FFFFFF;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-btn {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-yellow);
+  color: var(--text-primary);
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.icon-btn:hover {
+  background: var(--accent-yellow);
+  color: #000;
+  box-shadow: var(--glow-yellow);
+  transform: translateY(-1px);
+}
+
+/* ===================================================================
+   2. Main Game Viewport & Canvas
+=================================================================== */
+.game-viewport-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 580px;
+  background: #000;
+  border-radius: 16px;
+  border: 2px solid var(--border-yellow);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7), 0 0 30px rgba(255, 232, 31, 0.15);
+  overflow: hidden;
+}
+
+#game-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  background-color: #1a293f;
+}
+
+/* Canvas In-Game HUD */
+.canvas-hud {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  pointer-events: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  z-index: 5;
+}
+
+.player-hud-card {
+  background: rgba(11, 15, 25, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-yellow);
+  border-radius: 10px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  min-width: 220px;
+}
+
+.pilot-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pilot-avatar {
+  font-size: 1.3rem;
+  background: var(--bg-surface-elevated);
+  padding: 4px;
+  border-radius: 6px;
+  border: 1px solid var(--accent-yellow);
+}
+
+.pilot-name {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--accent-yellow);
+}
+
+.health-bar-container {
+  width: 140px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  margin-top: 2px;
+}
+
+.health-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #FFB703, var(--accent-yellow));
+  box-shadow: 0 0 10px var(--accent-yellow-glow);
+  transition: width 0.2s ease-out;
+}
+
+.ammo-display {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 6px;
+}
+
+.ammo-label-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ammo-title {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.ammo-counter {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent-yellow);
+}
+
+.ammo-bullets {
+  display: flex;
+  gap: 3px;
+  height: 14px;
+  align-items: center;
+}
+
+.bullet-pip {
+  width: 6px;
+  height: 12px;
+  background: var(--accent-yellow);
+  border-radius: 2px;
+  box-shadow: 0 0 5px var(--accent-yellow-glow);
+  transition: all 0.15s ease;
+}
+
+.bullet-pip.spent {
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: none;
+}
+
+.reload-warning {
+  display: none;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent-yellow);
+  background: rgba(255, 232, 31, 0.18);
+  border: 1px solid var(--accent-yellow);
+  padding: 3px 6px;
+  border-radius: 4px;
+  text-align: center;
+  animation: pulseWarning 0.6s infinite alternate ease-in-out;
+}
+
+.reload-warning.active {
+  display: block;
+}
+
+@keyframes pulseWarning {
+  from { opacity: 0.6; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1.02); box-shadow: 0 0 10px var(--accent-yellow-glow); }
+}
+
+/* Combo Streak Banner */
+.combo-container {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid var(--accent-yellow);
+  border-radius: 8px;
+  padding: 6px 14px;
+  box-shadow: var(--glow-yellow);
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.combo-container.active {
+  display: flex;
+}
+
+.combo-number {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent-yellow);
+}
+
+.combo-text {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #FFFFFF;
+}
+
+/* Alert Banner (Trump squadron warning) */
+.alert-banner {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  background: rgba(20, 8, 8, 0.9);
+  border: 1px solid var(--color-danger);
+  border-radius: 10px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 20px var(--color-danger-glow);
+  animation: slideInRight 0.4s ease-out;
+}
+
+.alert-banner.active {
+  display: flex;
+}
+
+.alert-trump-img {
+  width: 42px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--color-danger);
+  background: #fff;
+}
+
+.alert-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.alert-title {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-danger);
+  letter-spacing: 1px;
+}
+
+.alert-quote {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  color: #FFFFFF;
+  font-style: italic;
+}
+
+/* ===================================================================
+   3. Modals & Overlays (Start, Game Over, Pause)
+=================================================================== */
+.game-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(6, 8, 14, 0.88);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  padding: 20px;
+}
+
+.game-overlay.active {
+  display: flex;
+}
+
+.modal-card {
+  background: var(--bg-surface-elevated);
+  border: 2px solid var(--accent-yellow);
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), var(--glow-yellow);
+  padding: 28px 34px;
+  max-width: 580px;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  animation: zoomFade 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-badge {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  background: var(--accent-yellow-subtle);
+  color: var(--accent-yellow);
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border-yellow);
+}
+
+.modal-badge.danger {
+  background: rgba(255, 51, 75, 0.15);
+  color: var(--color-danger);
+  border-color: rgba(255, 51, 75, 0.4);
+}
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #FFFFFF;
+  line-height: 1.1;
+}
+
+.modal-title span {
+  color: var(--accent-yellow);
+  text-shadow: 0 0 16px var(--accent-yellow-glow);
+}
+
+.modal-subtitle {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  max-width: 480px;
+}
+
+/* Plane Previews */
+.preview-cards {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 12px;
+  padding: 12px 18px;
+  border: 1px solid var(--border-subtle);
+}
+
+.preview-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.preview-item img {
+  height: 52px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+  transition: transform 0.2s ease;
+}
+
+.preview-item:hover img {
+  transform: scale(1.1);
+}
+
+.preview-vs {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--accent-yellow);
+}
+
+/* Controls Guide Grid */
+.controls-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.control-box {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.control-box.highlight {
+  border-color: var(--border-yellow);
+  background: rgba(255, 232, 31, 0.05);
+}
+
+.control-box.highlight.fire {
+  border-color: #FFA000;
+  background: rgba(255, 160, 0, 0.1);
+}
+
+.control-box.highlight.reload {
+  border-color: var(--color-cyan);
+  background: rgba(0, 229, 255, 0.08);
+}
+
+.key-badge {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  background: var(--bg-surface);
+  color: var(--accent-yellow);
+  border: 1px solid var(--accent-yellow);
+  padding: 2px 8px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Primary Action Buttons */
+.primary-action-btn {
+  position: relative;
+  background: var(--accent-yellow);
+  color: #0B0E14;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 32px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 6px 24px var(--accent-yellow-glow);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.primary-action-btn:hover {
+  background: var(--accent-yellow-bright);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(255, 232, 31, 0.6);
+}
+
+.primary-action-btn:active {
+  transform: translateY(1px);
+}
+
+/* Results Grid for Game Over */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  width: 100%;
+}
+
+.result-tile {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.result-label {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.result-val {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.result-val.highlight {
+  color: var(--accent-yellow);
+  text-shadow: 0 0 12px var(--accent-yellow-glow);
+}
+
+/* ===================================================================
+   4. Footer & Real-Time Keyboard Visualizer
+=================================================================== */
+.game-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.key-status-tracker {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  background: var(--bg-surface-glass);
+  border: 1px solid var(--border-yellow);
+  border-radius: 12px;
+  padding: 10px 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.key-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 232, 31, 0.2);
+  border-radius: 8px;
+  padding: 6px 14px;
+  min-width: 80px;
+  transition: all 0.1s ease;
+}
+
+.key-indicator .key-name {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--accent-yellow);
+}
+
+.key-indicator .key-action {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+}
+
+/* When Key Is Pressed by Player */
+.key-indicator.pressed {
+  background: var(--accent-yellow);
+  border-color: #FFFFFF;
+  box-shadow: 0 0 16px var(--accent-yellow-glow);
+  transform: translateY(2px) scale(0.97);
+}
+
+.key-indicator.pressed .key-name {
+  color: #0B0E14;
+}
+
+.key-indicator.pressed .key-action {
+  color: #202636;
+}
+
+/* Touch Control Dock for Mobile/Mouse Accessibility */
+.touch-control-dock {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.touch-btn {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-yellow);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.touch-btn:hover {
+  background: rgba(255, 232, 31, 0.15);
+  border-color: var(--accent-yellow);
+}
+
+.touch-btn:active {
+  transform: translateY(2px);
+  background: var(--accent-yellow);
+  color: #000;
+}
+
+.touch-btn-primary {
+  background: rgba(255, 160, 0, 0.15);
+  border-color: #FFA000;
+  color: var(--accent-yellow);
+}
+
+.touch-btn-accent {
+  background: rgba(0, 229, 255, 0.12);
+  border-color: var(--color-cyan);
+  color: var(--color-cyan);
+}
+
+/* Keyframes */
+@keyframes zoomFade {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.7); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #game-app {
+    padding: 8px;
+    gap: 8px;
+  }
+  .brand-title {
+    font-size: 1.1rem;
+  }
+  .stat-box {
+    min-width: 65px;
+    padding: 4px 8px;
+  }
+  .stat-value {
+    font-size: 1.1rem;
+  }
+  .key-status-tracker {
+    gap: 6px;
+    padding: 6px;
+  }
+  .key-indicator {
+    min-width: 55px;
+    padding: 4px 6px;
+  }
+  .controls-guide-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

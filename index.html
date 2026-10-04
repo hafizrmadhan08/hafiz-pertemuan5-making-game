@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Tappy Plane: Antek Asing Buster</title>
+  <meta name="description" content="Mini game seru bergaya Tappy Plane menembak antek-antek asing berlivery khusus. Kontrol: D (Maju), A (Mundur), S (Tembak), R (Reload).">
+  
+  <!-- Max 2 Fonts: Chakra Petch (Arcade Military) & Plus Jakarta Sans (Clean Modern UI) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,600;0,700;1,700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-app">
+    <!-- Top Header Bar -->
+    <header class="game-header">
+      <div class="brand">
+        <span class="brand-badge">FLIGHT COMBAT</span>
+        <h1 class="brand-title">TAPPY <span>STRIKER</span></h1>
+      </div>
+      
+      <div class="hud-stats">
+        <div class="stat-box" id="score-box">
+          <span class="stat-label">SKOR</span>
+          <span class="stat-value" id="hud-score">0</span>
+        </div>
+        <div class="stat-box" id="kills-box">
+          <span class="stat-label">ANTEK JATUH</span>
+          <span class="stat-value" id="hud-kills">0</span>
+        </div>
+        <div class="stat-box" id="high-box">
+          <span class="stat-label">TERBAIK</span>
+          <span class="stat-value" id="hud-high">0</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button id="btn-sound" class="icon-btn" title="Toggle Suara" aria-label="Toggle Suara">
+          <span id="sound-icon">🔊</span>
+        </button>
+        <button id="btn-pause" class="icon-btn" title="Jeda Game" aria-label="Jeda Game">
+          <span id="pause-icon">⏸</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Game Viewport Container -->
+    <main class="game-viewport-wrap">
+      <canvas id="game-canvas" width="960" height="540"></canvas>
+
+      <!-- Combat HUD Overlay (Top & Sides on Canvas) -->
+      <div class="canvas-hud">
+        <!-- Player Status: Health & Ammo -->
+        <div class="player-hud-card">
+          <div class="pilot-info">
+            <span class="pilot-avatar">🛩️</span>
+            <div>
+              <div class="pilot-name">GARUDA-01</div>
+              <div class="health-bar-container">
+                <div class="health-bar-fill" id="player-hp-bar" style="width: 100%;"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="ammo-display">
+            <div class="ammo-label-group">
+              <span class="ammo-title">AMUNISI</span>
+              <span class="ammo-counter" id="ammo-text">15 / 15</span>
+            </div>
+            <div class="ammo-bullets" id="ammo-bullets-tray">
+              <!-- Dynamically generated bullet pips -->
+            </div>
+            <div class="reload-warning" id="reload-prompt">TEKAN [R] RELOAD!</div>
+          </div>
+        </div>
+
+        <!-- Combo Streak Banner -->
+        <div class="combo-container" id="combo-container">
+          <div class="combo-number" id="combo-count">3x</div>
+          <div class="combo-text">COMBO STRIKE!</div>
+        </div>
+
+        <!-- Alert Banner (Trump squadron warning) -->
+        <div class="alert-banner" id="alert-banner">
+          <img src="assets/trump_face.png" alt="Trump Livery" class="alert-trump-img">
+          <div class="alert-content">
+            <span class="alert-title">PERINGATAN ANTEK ASING!</span>
+            <span class="alert-quote" id="alert-quote">"THEY ARE ATTACKING! WRONG!"</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Start / Ready Screen Overlay -->
+      <div class="game-overlay active" id="start-overlay">
+        <div class="modal-card">
+          <div class="modal-badge">MISI PERTAHANAN UDARA</div>
+          <h2 class="modal-title">TEMBAK <span>ANTEK ASING</span></h2>
+          <p class="modal-subtitle">
+            Waspada! Pesawat antek asing dengan livery muka Donald Trump sedang menyerang wilayah udara. Tembak jatuh sampai mereka hancur terbakar ke tanah!
+          </p>
+
+          <div class="preview-cards">
+            <div class="preview-item">
+              <img src="assets/player_plane.png" alt="Pesawat Hero">
+              <span>Pesawat Kamu (Garuda-01)</span>
+            </div>
+            <div class="preview-vs">VS</div>
+            <div class="preview-item enemy-preview">
+              <img src="assets/enemy_trump.png" alt="Pesawat Antek Asing">
+              <span>Antek Asing (Trump Livery)</span>
+            </div>
+          </div>
+
+          <div class="controls-guide-grid">
+            <div class="control-box highlight">
+              <kbd class="key-badge">W</kbd> / <kbd class="key-badge">▲</kbd>
+              <span>Naik (Smooth)</span>
+            </div>
+            <div class="control-box highlight">
+              <kbd class="key-badge">▼</kbd> / <kbd class="key-badge">X</kbd>
+              <span>Turun (Smooth)</span>
+            </div>
+            <div class="control-box highlight">
+              <kbd class="key-badge">D</kbd>
+              <span>Maju Pesawat</span>
+            </div>
+            <div class="control-box highlight">
+              <kbd class="key-badge">A</kbd>
+              <span>Mundur Pesawat</span>
+            </div>
+            <div class="control-box highlight fire">
+              <kbd class="key-badge">KLIK KIRI</kbd> / <kbd class="key-badge">S</kbd>
+              <span>Tembak Antek</span>
+            </div>
+            <div class="control-box highlight reload">
+              <kbd class="key-badge">KLIK KANAN</kbd> / <kbd class="key-badge">R</kbd>
+              <span>Isi Ulang (Reload)</span>
+            </div>
+          </div>
+
+          <button class="primary-action-btn" id="btn-start-game">
+            <span class="btn-glow"></span>
+            <span class="btn-text">MULAI MISI SEKARANG</span>
+            <span class="btn-icon">⚡</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Game Over Overlay -->
+      <div class="game-overlay" id="gameover-overlay">
+        <div class="modal-card gameover-card">
+          <div class="modal-badge danger">PESAWAT TUMBANG</div>
+          <h2 class="modal-title">MISI <span>SELESAI</span></h2>
+          
+          <div class="results-grid">
+            <div class="result-tile">
+              <span class="result-label">SKOR AKHIR</span>
+              <span class="result-val highlight" id="go-score">0</span>
+            </div>
+            <div class="result-tile">
+              <span class="result-label">ANTEK DIJATUHKAN</span>
+              <span class="result-val" id="go-kills">0</span>
+            </div>
+            <div class="result-tile">
+              <span class="result-label">REKOR TERTINGGI</span>
+              <span class="result-val" id="go-high">0</span>
+            </div>
+            <div class="result-tile">
+              <span class="result-label">AKURASI</span>
+              <span class="result-val" id="go-acc">0%</span>
+            </div>
+          </div>
+
+          <button class="primary-action-btn" id="btn-restart-game">
+            <span class="btn-glow"></span>
+            <span class="btn-text">TERBANG LAGI [ENTER]</span>
+            <span class="btn-icon">🔄</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Pause Overlay -->
+      <div class="game-overlay" id="pause-overlay">
+        <div class="modal-card pause-card">
+          <div class="modal-badge">GAME DIJEDA</div>
+          <h2 class="modal-title">ISTIRAHAT <span>PILOT</span></h2>
+          <p class="modal-subtitle">Tekan [P] atau tombol di bawah untuk melanjutkan pertempuran.</p>
+          <button class="primary-action-btn" id="btn-resume-game">
+            <span class="btn-glow"></span>
+            <span class="btn-text">LANJUTKAN MISI</span>
+            <span class="btn-icon">▶</span>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom Controls & Key Status Visualizer -->
+    <footer class="game-footer">
+      <div class="key-status-tracker">
+        <div class="key-indicator" id="key-w">
+          <span class="key-name">W / ▲</span>
+          <span class="key-action">NAIK (HALUS)</span>
+        </div>
+        <div class="key-indicator" id="key-down">
+          <span class="key-name">▼ / X</span>
+          <span class="key-action">TURUN</span>
+        </div>
+        <div class="key-indicator" id="key-a">
+          <span class="key-name">A</span>
+          <span class="key-action">MUNDUR</span>
+        </div>
+        <div class="key-indicator" id="key-s">
+          <span class="key-name">KLIK-L / S</span>
+          <span class="key-action">TEMBAK</span>
+        </div>
+        <div class="key-indicator" id="key-d">
+          <span class="key-name">D</span>
+          <span class="key-action">MAJU</span>
+        </div>
+        <div class="key-indicator" id="key-r">
+          <span class="key-name">KLIK-R / R</span>
+          <span class="key-action">RELOAD</span>
+        </div>
+      </div>
+
+      <!-- Quick Interactive Touch / Mouse Buttons for Accessibility -->
+      <div class="touch-control-dock">
+        <button class="touch-btn" id="touch-fly" aria-label="Naik">⬆️ NAIK</button>
+        <button class="touch-btn" id="touch-down" aria-label="Turun">⬇️ TURUN</button>
+        <button class="touch-btn" id="touch-backward" aria-label="Mundur">[A] MUNDUR</button>
+        <button class="touch-btn touch-btn-primary" id="touch-shoot" aria-label="Tembak">🔥 [S] TEMBAK</button>
+        <button class="touch-btn" id="touch-forward" aria-label="Maju">[D] MAJU</button>
+        <button class="touch-btn touch-btn-accent" id="touch-reload" aria-label="Reload">🔄 [R] RELOAD</button>
+      </div>
+    </footer>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
